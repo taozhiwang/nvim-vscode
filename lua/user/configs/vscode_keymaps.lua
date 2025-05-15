@@ -8,6 +8,22 @@ vim.keymap.set({ "n" }, "<C-r>", "<cmd>call VSCodeNotify('redo')<cr>", { noremap
 
 -- vim.keymap.set({ "n", "v" }, "<Space>", "<cmd>call VSCodeNotify('whichkey.show')<cr>", { noremap = true, silent = true })
 
-vim.keymap.set("n", "<C-o>", "<cmd>call VSCodeNotify('workbench.action.navigateBack')<cr>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-i>", "<cmd>call VSCodeNotify('workbench.action.navigateForward')<cr>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<C-o>", "<cmd>call VSCodeNotify('workbench.action.navigateBack')<cr>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<C-i>", "<cmd>call VSCodeNotify('workbench.action.navigateForward')<cr>", { noremap = true, silent = true })
+
+-- vim.keymap.set({ "n", "x" }, "<C-u>", function()
+--     local visibleRanges = require('vscode').eval("return vscode.window.activeTextEditor.visibleRanges")
+--     local height = visibleRanges[1][2].line - visibleRanges[1][1].line
+--     for i = 1, height*2/3 do
+--         vim.api.nvim_feedkeys("k", "n", false)
+--     end
+-- end)
+
+-- vim.keymap.set({ "n", "x" }, "<C-d>", function()
+--     local visibleRanges = require('vscode').eval("return vscode.window.activeTextEditor.visibleRanges")
+--     local height = visibleRanges[1][2].line - visibleRanges[1][1].line
+--     for i = 1, height*2/3 do
+--         vim.api.nvim_feedkeys("j", "n", false)
+--     end
+-- end)
 

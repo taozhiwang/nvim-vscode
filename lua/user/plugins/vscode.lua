@@ -38,6 +38,9 @@ return {
     init = function()
       vim.api.nvim_set_hl(0, "FlashLabel", { fg = "#f9fafe", bg = "#ff007c", italic = true, bold = true })
     end,
+    keys = {
+      { "s", "<Cmd>lua require('flash').jump()<CR>", mode = { "n", "x" }, desc = "Flash Jump" },
+    },
   },
   {
     "mrbeardad/nvim-multi-cursor",

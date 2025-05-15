@@ -1,6 +1,8 @@
 local keymap = require("user.utils.keymap")
 local utils = require("user.utils")
 local vscode = require("vscode-neovim")
+-- Load jumplist configuration for better C-o/C-i behavior
+require("user.configs.jumplist")
 
 vim.notify = vscode.notify
 vim.g.clipboard = vim.g.vscode_clipboard
