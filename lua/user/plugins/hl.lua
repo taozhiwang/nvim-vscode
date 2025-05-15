@@ -25,7 +25,7 @@ return {
         local function goto_hunk(next)
           return function()
             if vim.wo.diff then
-              vim.cmd("normal! " .. (next and "]c" or "[c"))
+              pcall(vim.cmd, "normal! " .. (next and "]c" or "[c"))
             else
               require("gitsigns")[next and "next_hunk" or "prev_hunk"]()
             end
@@ -95,7 +95,7 @@ return {
       enable_incsearch = false,
       override_lens = function(render, posList, nearest, idx, _)
         --                           🠇 This is \u00A0 since ascii space will disappear in vscode
-        local text = nearest and ("%s [%d/%d]"):format(vim.fn.getreg("/"), idx, #posList) or ""
+        local text = nearest and ("%s [%d/%d]"):format(vim.fn.getreg("/"), idx, #posList) or ""
         local chunks = { { " ", "Ignore" }, { text, "HlSearchLensNear" } }
         local lnum, col = unpack(posList[idx])
         render.setVirt(0, lnum - 1, col - 1, chunks, nearest)

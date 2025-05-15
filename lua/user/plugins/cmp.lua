@@ -53,16 +53,16 @@ return {
           end, { "i", "c" }),
           ["<Tab>"] = cmp.mapping({
             i = function(fallback)
-              if cmp.visible() and vim.cmd("let &ul=&ul") and require("cmp").confirm() then
-              elseif require("luasnip").expandable() and vim.cmd("let &ul=&ul") and require("luasnip").expand() then
+              if cmp.visible() and pcall(vim.cmd, "let &ul=&ul") and require("cmp").confirm() then
+              elseif require("luasnip").expandable() and pcall(vim.cmd, "let &ul=&ul") and require("luasnip").expand() then
               elseif require("luasnip").jumpable(1) and require("luasnip").jump(1) then
               else
                 fallback()
               end
             end,
             s = function(fallback)
-              if cmp.visible() and vim.cmd("let &ul=&ul") and require("cmp").confirm() then
-              elseif require("luasnip").expandable() and vim.cmd("let &ul=&ul") and require("luasnip").expand() then
+              if cmp.visible() and pcall(vim.cmd, "let &ul=&ul") and require("cmp").confirm() then
+              elseif require("luasnip").expandable() and pcall(vim.cmd, "let &ul=&ul") and require("luasnip").expand() then
               elseif require("luasnip").jumpable(1) and require("luasnip").jump(1) then
               else
                 fallback()
@@ -80,7 +80,7 @@ return {
             i = function(fallback)
               if
                 cmp.visible()
-                and vim.cmd("let &ul=&ul")
+                and pcall(vim.cmd, "let &ul=&ul")
                 and require("cmp").confirm({ behavior = cmp.ConfirmBehavior.Replace })
               then
               elseif require("luasnip").jumpable(-1) and require("luasnip").jump(-1) then
@@ -91,7 +91,7 @@ return {
             s = function(fallback)
               if
                 cmp.visible()
-                and vim.cmd("let &ul=&ul")
+                and pcall(vim.cmd, "let &ul=&ul")
                 and require("cmp").confirm({ behavior = cmp.ConfirmBehavior.Replace })
               then
               elseif require("luasnip").jumpable(-1) and require("luasnip").jump(-1) then

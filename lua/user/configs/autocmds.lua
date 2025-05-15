@@ -8,7 +8,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
   nested = true,
   callback = function(ev)
     local bufname = vim.api.nvim_buf_get_name(ev.buf)
-    local stat = vim.uv.fs_stat(bufname)
+    local stat = vim.loop.fs_stat(bufname)
     if stat and stat.type == "directory" then
       vim.api.nvim_del_augroup_by_id(utils.augroup("LazyDir"))
       utils.dir_open_by_cmd_arg = bufname
@@ -66,7 +66,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
     current_buf = ev.buf
     if utils.is_real_file(current_buf) then
       local root = utils.workspace_root()
-      if root ~= vim.uv.cwd() then
+      if root ~= vim.loop.cwd() then
         vim.fn.chdir(root)
       end
     end
@@ -78,7 +78,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   callback = function(ev)
     if ev.buf == current_buf then
       local root = utils.workspace_root(true)
-      if root ~= vim.uv.cwd() then
+      if root ~= vim.loop.cwd() then
         vim.fn.chdir(root)
       end
     end
@@ -90,7 +90,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     if ev.buf == current_buf then
       local root = utils.workspace_root(true)
-      if root ~= vim.uv.cwd() then
+      if root ~= vim.loop.cwd() then
         vim.fn.chdir(root)
       end
     end
@@ -111,7 +111,7 @@ vim.api.nvim_create_autocmd("BufRead", {
           and vim.fn.line("'\"") > 1
           and vim.fn.line("'\"") <= vim.fn.line("$")
         then
-          vim.cmd('normal! g`"zz')
+          pcall(vim.cmd, 'normal! g`"zz')
         end
       end,
     })
@@ -129,7 +129,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   group = utils.augroup("AutoCreateDir"),
   callback = function(ev)
     if not ev.match:match("^%w%w+://") then
-      local file = vim.uv.fs_realpath(ev.match) or ev.match
+      local file = vim.loop.fs_realpath(ev.match) or ev.match
       vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
     end
   end,
@@ -140,8 +140,8 @@ vim.api.nvim_create_autocmd({ "VimResized" }, {
   group = utils.augroup("ResizeSplits"),
   callback = function()
     local current_tab = vim.fn.tabpagenr()
-    vim.cmd("tabdo wincmd =")
-    vim.cmd("tabnext " .. current_tab)
+    pcall(vim.cmd, "tabdo wincmd =")
+    pcall(vim.cmd, "tabnext " .. current_tab)
   end,
 })
 

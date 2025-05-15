@@ -20,7 +20,7 @@ return {
                   local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
                   for key, query in pairs(config or {}) do
                     if q == query and key:find("[%]%[][cC]") then
-                      vim.cmd("normal! " .. key)
+                      pcall(vim.cmd, "normal! " .. key)
                       return
                     end
                   end

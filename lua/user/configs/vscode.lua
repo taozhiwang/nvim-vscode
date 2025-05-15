@@ -24,7 +24,7 @@ vim.opt.shiftround = true
 vim.opt.smartindent = true
 vim.opt.formatoptions = "tcrqjnl"
 vim.opt.clipboard = "unnamedplus"
-vim.cmd.syntax("off")
+pcall(vim.cmd.syntax, "off")
 
 -- Autocmds
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile", "BufAdd" }, {
@@ -37,7 +37,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile", "BufAdd" }, {
 })
 
 -- Keymaps
-vim.g.mapleader = " "
+vim.g.mapleader = "`"
 vim.g.maplocalleader = "\\"
 
 local function vscode_action(cmd)
@@ -160,3 +160,6 @@ vim.keymap.del("x", "mi")
 vim.keymap.del("x", "mI")
 vim.keymap.del("x", "ma")
 vim.keymap.del("x", "mA")
+
+vim.keymap.set("n", "<Space>", vscode_action("whichkey.show"), { desc = "Show WhichKey" })
+vim.keymap.set("x", "<Space>", vscode_action("whichkey.show"), { desc = "Show WhichKey" })

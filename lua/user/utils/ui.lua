@@ -188,7 +188,7 @@ function M.color(name, bg)
 end
 
 M.skip_foldexpr = {} ---@type table<number,boolean>
-local skip_check = assert(vim.uv.new_check())
+local skip_check = assert(vim.loop.new_check())
 
 function M.foldexpr()
   local buf = vim.api.nvim_get_current_buf()
@@ -236,7 +236,7 @@ function M.bufremove(buf)
       return
     end
     if choice == 1 then -- Yes
-      vim.cmd.write()
+      pcall(vim.cmd.write)
     end
   end
 

@@ -3,7 +3,7 @@ return {
     "f-person/auto-dark-mode.nvim",
     priority = 1000,
     init = function()
-      vim.cmd.colorscheme("tokyonight")
+      pcall(vim.cmd.colorscheme, "tokyonight")
     end,
     opts = {
       update_interval = 1000,

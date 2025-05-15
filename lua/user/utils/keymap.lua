@@ -30,16 +30,16 @@ end
 function M.zoom_window()
   local cur_win = vim.api.nvim_get_current_win()
   vim.api.nvim_set_var("non_float_total", 0)
-  vim.cmd('windo if &buftype != "nofile" | let g:non_float_total += 1 | endif')
+  pcall(vim.cmd, 'windo if &buftype != "nofile" | let g:non_float_total += 1 | endif')
   vim.api.nvim_set_current_win(cur_win or 0)
   if vim.api.nvim_get_var("non_float_total") == 1 then
     if vim.fn.tabpagenr("$") == 1 then
       return
     end
-    vim.cmd("tabclose")
+    pcall(vim.cmd, "tabclose")
   else
     local last_cursor = vim.api.nvim_win_get_cursor(0)
-    vim.cmd("tabedit %:p")
+    pcall(vim.cmd, "tabedit %:p")
     vim.api.nvim_win_set_cursor(0, last_cursor)
   end
 end
@@ -175,7 +175,7 @@ function M.open_term(cmd, opts)
     vim.api.nvim_create_autocmd("BufEnter", {
       buffer = buf,
       callback = function()
-        vim.cmd.startinsert()
+        pcall(vim.cmd.startinsert)
       end,
     })
   end
@@ -210,7 +210,7 @@ function M.save_file(noauto)
     if vim.fn.bufname() == "" then
       vim.api.nvim_input(":" .. noauto .. "update ")
     else
-      vim.cmd(noauto .. "update")
+      pcall(vim.cmd, noauto .. "update")
     end
   end
 end

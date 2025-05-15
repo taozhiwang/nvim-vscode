@@ -59,7 +59,7 @@ return {
     config = function(_, opts)
       -- Close Lazy and re-open when the dashboard is ready
       if vim.o.filetype == "lazy" then
-        vim.cmd.close()
+        pcall(vim.cmd.close)
         vim.api.nvim_create_autocmd("User", {
           once = true,
           pattern = "AlphaReady",
@@ -496,7 +496,7 @@ return {
           },
         },
         path_display = function(opts, path)
-          local prefix = vim.uv.cwd()
+          local prefix = vim.loop.cwd()
           local plen = #prefix
           local start = utils.is_windows() and 3 or 1
           if string.sub(path, start, plen) == prefix:sub(start) then
@@ -573,7 +573,7 @@ return {
         "<Leader>/",
         function()
           local text = table.concat(utils.get_visual_text()):gsub(" ", "\\ ")
-          vim.cmd("Telescope egrepify default_text=" .. text)
+          pcall(vim.cmd, "Telescope egrepify default_text=" .. text)
         end,
         mode = "x",
         desc = "Search Text",
