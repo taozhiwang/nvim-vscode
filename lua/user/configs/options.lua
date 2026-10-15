@@ -28,8 +28,32 @@ vim.opt.shiftwidth = 2 -- Size of an indent
 vim.opt.shiftround = true -- Round indent
 vim.opt.smartindent = true -- Insert indents automatically
 vim.opt.formatoptions = "tcrqjnl" -- Configure the automatically format options
-vim.opt.clipboard = "unnamedplus" -- Do not sync with system clipboard
-deferclip.setup() -- Defer to sync clipboard to improve performance
+vim.opt.clipboard = "unnamedplus" -- Sync the unnamed register with the system clipboard
+if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
+  -- Over SSH, copy through the terminal with OSC 52. Paste returns the last yank made in this Neovim,
+  -- because many terminals don't answer OSC 52 reads and Neovim would block for up to 10s.
+  -- (Reading getreg('"') here doesn't work: with unnamedplus it is the + register itself.)
+  local osc52 = require("vim.ui.clipboard.osc52")
+  local last = { { "" }, "v" }
+  local function copy(reg)
+    local send = osc52.copy(reg)
+    return function(lines, regtype)
+      last = { lines, regtype }
+      send(lines, regtype)
+    end
+  end
+  local function paste()
+    return last
+  end
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = { ["+"] = copy("+"), ["*"] = copy("*") },
+    paste = { ["+"] = paste, ["*"] = paste },
+  }
+elseif vim.fn.has("mac") == 1 then
+  vim.g.clipboard = "pbcopy"
+end
+deferclip.setup() -- Windows: defer syncing the clipboard to improve performance
 
 -- UI: inside window
 vim.opt.list = true -- Show some invisible characters

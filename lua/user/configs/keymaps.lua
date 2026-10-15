@@ -4,7 +4,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 -- TODO: esc to close floating windows
 -- Plugins Manager
-vim.keymap.set("n", "<Leader>p", "<Cmd>Lazy<CR>", { desc = "Plugins Manager" })
+vim.keymap.set("n", "<Leader>L", "<Cmd>Lazy<CR>", { desc = "Plugins Manager" })
 
 -- Buffers: switch
 vim.keymap.set("n", "<Leader><Tab><Tab>", "<Cmd>try<Bar>b#<Bar>catch<Bar>endtry<CR>", { desc = "Switch Buffer" })
@@ -70,11 +70,15 @@ vim.keymap.set({ "i", "c", "n", "v" }, "<M-I>", "<C-I>", { desc = "<C-I>" })
 
 -- Motion: go to diagnostic
 local diagnostic_goto = function(next, severity)
-  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
   severity = severity and vim.diagnostic.severity[severity] or nil
   return function()
-    go({ severity = severity })
-    vim.diagnostic.open_float()
+    vim.diagnostic.jump({
+      count = next and 1 or -1,
+      severity = severity,
+      on_jump = function()
+        vim.diagnostic.open_float()
+      end,
+    })
   end
 end
 vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
@@ -132,6 +136,7 @@ vim.keymap.set("i", "<C-K>", '<C-G>u<Cmd>normal! "_d$<CR><Right>', { desc = "Del
 vim.keymap.set("i", "<C-J>", "<C-G>u<End><CR>", { desc = "New Line" }) -- <C-G>u is required here since <End> does not break undo here
 
 -- Operation: yank and paste
+keymap.set_clipboard_maps()
 vim.keymap.set("x", "<C-C>", "y", { desc = "Yank" })
 vim.keymap.set("i", "<C-V>", "<C-G>u<C-R><C-P>+", { desc = "Paste Last Yanked" })
 vim.keymap.set("c", "<C-V>", "<C-R>+", { desc = "Paste Last Yanked" })

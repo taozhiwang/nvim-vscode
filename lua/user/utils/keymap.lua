@@ -27,6 +27,15 @@ function M.switch_window(next)
   end
 end
 
+-- Yank/paste through the system clipboard explicitly
+function M.set_clipboard_maps()
+  vim.keymap.set({ "n", "x" }, "<Leader>y", '"+y', { desc = "Yank to System Clipboard" })
+  vim.keymap.set("n", "<Leader>Y", '"+y$', { desc = "Yank to EOL to System Clipboard" })
+  vim.keymap.set("n", "<Leader>p", '"+p', { desc = "Paste from System Clipboard" })
+  -- Visual P replaces the selection without overwriting the register
+  vim.keymap.set("x", "<Leader>p", '"+P', { desc = "Paste from System Clipboard" })
+end
+
 function M.zoom_window()
   local cur_win = vim.api.nvim_get_current_win()
   vim.api.nvim_set_var("non_float_total", 0)

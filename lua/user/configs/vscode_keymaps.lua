@@ -1,5 +1,11 @@
-vim.keymap.set({ "n" }, "u", "<cmd>call VSCodeNotify('undo')<cr>", { noremap = true, silent = true })
-vim.keymap.set({ "n" }, "<C-r>", "<cmd>call VSCodeNotify('redo')<cr>", { noremap = true, silent = true })
+local vscode = require("vscode")
+
+vim.keymap.set("n", "u", function()
+  vscode.action("undo")
+end, { desc = "Undo" })
+vim.keymap.set("n", "<C-r>", function()
+  vscode.action("redo")
+end, { desc = "Redo" })
 
 -- vim.keymap.set({ "n", "v" }, "<S-h>", "<cmd>call VSCodeNotify('workbench.action.navigateLeft')<cr>", { noremap = true, silent = true })
 -- vim.keymap.set({ "n", "v" }, "<S-j>", "<cmd>call VSCodeNotify('workbench.action.navigateDown')<cr>", { noremap = true, silent = true })

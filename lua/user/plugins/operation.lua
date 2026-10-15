@@ -4,7 +4,7 @@ local utils = require("user.utils")
 return {
   -- Modify surround objects
   {
-    "echasnovski/mini.surround",
+    "nvim-mini/mini.surround",
     keys = {
       { "ys", desc = "Add Surround" },
       { "s", ":<C-U>lua MiniSurround.add('visual')<CR>", mode = "x", desc = "Add Surround" },

@@ -1,6 +1,6 @@
 local keymap = require("user.utils.keymap")
 local utils = require("user.utils")
-local vscode = require("vscode-neovim")
+local vscode = require("vscode")
 -- Load jumplist configuration for better C-o/C-i behavior
 require("user.configs.jumplist")
 
@@ -153,15 +153,15 @@ end)
 vim.keymap.set("i", "<C-K>", '<C-G>u<Cmd>normal! "_d$<CR><Right>')
 vim.keymap.set("i", "<C-J>", "<C-G>u<End><CR>")
 -- Operation: yank and paste
+keymap.set_clipboard_maps()
 vim.keymap.set("i", "<C-V>", "<C-G>u<C-R><C-P>+")
 vim.keymap.set("c", "<C-V>", "<C-R>+")
 -- Operation: undo
 vim.keymap.set("i", "<C-Z>", "<Cmd>normal u<CR>")
--- Operation: repeat
-vim.keymap.del("x", "mi")
-vim.keymap.del("x", "mI")
-vim.keymap.del("x", "ma")
-vim.keymap.del("x", "mA")
+-- Operation: repeat (drop vscode-neovim's multi-cursor maps; pcall so a missing map can't abort init)
+for _, lhs in ipairs({ "mi", "mI", "ma", "mA" }) do
+  pcall(vim.keymap.del, "x", lhs)
+end
 
-vim.keymap.set("n", "<Space>", vscode_action("whichkey.show"), { desc = "Show WhichKey" })
-vim.keymap.set("x", "<Space>", vscode_action("whichkey.show"), { desc = "Show WhichKey" })
+-- The leader is "`", so nothing else starts with <Space> and which-key opens without waiting 'timeoutlen'
+vim.keymap.set({ "n", "x" }, "<Space>", vscode_action("whichkey.show"), { nowait = true, desc = "Show WhichKey" })

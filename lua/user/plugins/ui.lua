@@ -331,7 +331,7 @@ return {
 
   -- Animate scroll
   {
-    "echasnovski/mini.animate",
+    "nvim-mini/mini.animate",
     event = "VeryLazy",
     opts = function()
       -- don't use animate when scrolling with the mouse
@@ -496,7 +496,7 @@ return {
           },
         },
         path_display = function(opts, path)
-          local prefix = vim.loop.cwd()
+          local prefix = vim.uv.cwd()
           local plen = #prefix
           local start = utils.is_windows() and 3 or 1
           if string.sub(path, start, plen) == prefix:sub(start) then

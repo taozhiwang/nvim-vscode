@@ -3,38 +3,13 @@ local utils = require("user.utils")
 
 return {
   -- Parse code to AST, and use it to highlight, move, select, etc.
+  -- nvim-treesitter `main` branch (Neovim 0.12+, needs the tree-sitter CLI). It only installs parsers;
+  -- highlighting and indent are started per buffer below. Lazy-loading is not supported.
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        config = function()
-          -- When in diff mode, we want to use the default
-          -- vim text objects c & C instead of the treesitter ones.
-          local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-          local configs = require("nvim-treesitter.configs")
-          for name, fn in pairs(move) do
-            if name:find("goto") == 1 then
-              move[name] = function(q, ...)
-                if vim.wo.diff then
-                  local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-                  for key, query in pairs(config or {}) do
-                    if q == query and key:find("[%]%[][cC]") then
-                      pcall(vim.cmd, "normal! " .. key)
-                      return
-                    end
-                  end
-                end
-                return fn(q, ...)
-              end
-            end
-          end
-        end,
-      },
-    },
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = "User LazyFile",
-    cmd = { "TSInstall", "TSUpdate", "TSUpdateSync" },
     opts = {
       ensure_installed = {
         "c",
@@ -52,30 +27,63 @@ return {
         "gitcommit",
         "gitignore",
       },
-      highlight = { enable = true },
-      indent = { enable = true },
-      textobjects = {
-        move = {
-          enable = true,
-          goto_next_start = { ["]a"] = "@parameter.outer", ["]f"] = "@function.outer", ["]c"] = "@class.outer" },
-          goto_next_end = { ["]A"] = "@parameter.outer", ["]F"] = "@function.outer", ["]C"] = "@class.outer" },
-          goto_previous_start = { ["[a"] = "@parameter.outer", ["[f"] = "@function.outer", ["[c"] = "@class.outer" },
-          goto_previous_end = { ["[A"] = "@parameter.outer", ["[F"] = "@function.outer", ["[C"] = "@class.outer" },
-        },
-      },
     },
-    config = function(plugin, opts)
-      -- Duplicate parser will cause problem
-      opts.ensure_installed = utils.tbl_unique(opts.ensure_installed)
+    config = function(_, opts)
+      local ts = require("nvim-treesitter")
+      local installed = ts.get_installed()
+      local missing = vim.tbl_filter(function(lang)
+        return not vim.tbl_contains(installed, lang)
+      end, utils.tbl_unique(opts.ensure_installed))
+      if #missing > 0 then
+        if vim.fn.executable("tree-sitter") == 1 then
+          ts.install(missing)
+        else
+          vim.notify("tree-sitter CLI not found: `brew install tree-sitter-cli`", vim.log.levels.WARN)
+        end
+      end
 
-      -- Add nvim-treesitter queries to the rtp and its custom query predicates early.
-      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`,
-      -- which no longer trigger the **nvim-treeitter** module to be loaded in time.
-      -- Luckily, the only thins that those plugins need are the custom queries,
-      -- which we make available during startup.
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
-      require("nvim-treesitter.configs").setup(opts)
+      -- VSCode renders highlighting itself; Neovim there only needs parsers for textobjects
+      vim.api.nvim_create_autocmd("FileType", {
+        group = utils.augroup("TreesitterStart"),
+        callback = function(ev)
+          if vim.g.vscode then
+            return
+          end
+          if pcall(vim.treesitter.start, ev.buf) then
+            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
+  },
+
+  -- Jump between functions, classes and parameters
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    event = "User LazyFile",
+    opts = {
+      move = { set_jumps = true },
+    },
+    config = function(_, opts)
+      require("nvim-treesitter-textobjects").setup(opts)
+      local moves = {
+        goto_next_start = { ["]a"] = "@parameter.outer", ["]f"] = "@function.outer", ["]c"] = "@class.outer" },
+        goto_next_end = { ["]A"] = "@parameter.outer", ["]F"] = "@function.outer", ["]C"] = "@class.outer" },
+        goto_previous_start = { ["[a"] = "@parameter.outer", ["[f"] = "@function.outer", ["[c"] = "@class.outer" },
+        goto_previous_end = { ["[A"] = "@parameter.outer", ["[F"] = "@function.outer", ["[C"] = "@class.outer" },
+      }
+      for method, keymaps in pairs(moves) do
+        for key, query in pairs(keymaps) do
+          vim.keymap.set({ "n", "x", "o" }, key, function()
+            -- In diff mode, keep the built-in ]c/[c (next/previous change)
+            if vim.wo.diff and key:find("[cC]") then
+              return vim.cmd("normal! " .. key)
+            end
+            require("nvim-treesitter-textobjects.move")[method](query, "textobjects")
+          end, { desc = method:gsub("_", " ") .. " " .. query })
+        end
+      end
     end,
   },
 
@@ -150,7 +158,7 @@ return {
 
   -- Better text-objects
   {
-    "echasnovski/mini.ai",
+    "nvim-mini/mini.ai",
     keys = {
       { "a", mode = { "x", "o" } },
       { "i", mode = { "x", "o" } },

@@ -66,14 +66,14 @@ return {
                   local action, uri, range = unpack(command.arguments)
 
                   local function move(newf)
-                    client.request("workspace/executeCommand", {
+                    client:request("workspace/executeCommand", {
                       command = command.command,
                       arguments = { action, uri, range, newf },
                     })
                   end
 
                   local fname = vim.uri_to_fname(uri)
-                  client.request("workspace/executeCommand", {
+                  client:request("workspace/executeCommand", {
                     command = "typescript.tsserverRequest",
                     arguments = {
                       "getMoveToRefactoringFileSuggestions",
@@ -153,7 +153,7 @@ return {
   },
 
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, { "eslint-lsp", "prettier" })
     end,

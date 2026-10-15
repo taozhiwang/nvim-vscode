@@ -2,7 +2,8 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed, { "json", "json5", "jsonc" })
+      -- nvim-treesitter main has no separate jsonc parser; json covers it
+      vim.list_extend(opts.ensure_installed, { "json", "json5" })
     end,
   },
 
@@ -45,7 +46,7 @@ return {
   },
 
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, { "prettier" })
     end,

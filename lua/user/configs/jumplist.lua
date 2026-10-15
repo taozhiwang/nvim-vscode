@@ -2,7 +2,7 @@
 -- This prevents C-u and C-d from polluting the jumplist
 
 if vim.g.vscode then
-    local vscode = require("vscode-neovim")
+    local vscode = require("vscode")
     local previous_jumplist_state = vim.fn.getjumplist()[1] -- Get the actual list of jumps
 
     local function jump_back()

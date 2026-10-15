@@ -25,14 +25,8 @@ lazy_config.options.defaults.cond = function(plugin)
   return vim.tbl_contains(enabled, plugin.name)
 end
 
+-- Treesitter highlighting is already skipped in VSCode (see plugins/motion.lua)
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      highlight = { enable = false },
-      indent = { enable = false },
-    },
-  },
   {
     "folke/flash.nvim",
     init = function()
@@ -96,7 +90,7 @@ return {
         function()
           if vim.fn.mode() == "\x16" then
             require("vscode-multi-cursor").start_right()
-            require("vscode-neovim").action("deleteLeft")
+            require("vscode").action("deleteLeft")
             return "<Ignore>"
           else
             return "c"

@@ -3,7 +3,7 @@ return {
   { "nvim-lua/plenary.nvim", lazy = true },
   -- Icons lib
   {
-    "echasnovski/mini.icons",
+    "nvim-mini/mini.icons",
     lazy = true,
     opts = {
       file = {
@@ -59,7 +59,7 @@ return {
 
   -- Better bd
   {
-    "echasnovski/mini.bufremove",
+    "nvim-mini/mini.bufremove",
     keys = {
       {
         "<Leader>bd",

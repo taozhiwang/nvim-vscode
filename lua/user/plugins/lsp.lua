@@ -3,7 +3,7 @@ local icons = require("user.utils.icons")
 return {
   -- Language tools manager (language server, debug adapter, linter, formatter)
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     build = ":MasonUpdate",
     keys = { { "<Leader>lm", "<Cmd>Mason<CR>", desc = "Language Tools Manager" } },
     cmd = { "Mason", "MasonUpdate", "MasonInstall", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
@@ -36,14 +36,14 @@ return {
     end,
   },
 
-  -- Preset configurations for language server
+  -- Preset configurations for language server (lsp/*.lua, merged by vim.lsp.config)
   {
     "neovim/nvim-lspconfig",
     dependencies = {
       -- Load before mason.nvim and nvim-lspconfig
-      "williamboman/mason.nvim",
-      -- Automatically install language server when it is setup, load before nvim-lspconfig
-      { "williamboman/mason-lspconfig.nvim", opts = { automatic_installation = true } },
+      "mason-org/mason.nvim",
+      -- Installs the configured servers; set up in the config below
+      { "mason-org/mason-lspconfig.nvim", config = function() end },
     },
     event = "User LazyFile",
     keys = { { "<Leader>li", "<Cmd>LspInfo<CR>", desc = "Language Servers Info" } },
@@ -62,12 +62,6 @@ return {
         end,
       })
 
-      -- Use these in neovim before 0.10
-      vim.fn.sign_define("DiagnosticSignError", { text = icons.diagnostics.error, texthl = "DiagnosticSignError" })
-      vim.fn.sign_define("DiagnosticSignWarn", { text = icons.diagnostics.warn, texthl = "DiagnosticSignWarn" })
-      vim.fn.sign_define("DiagnosticSignInfo", { text = icons.diagnostics.info, texthl = "DiagnosticSignInfo" })
-      vim.fn.sign_define("DiagnosticSignHint", { text = icons.diagnostics.hint, texthl = "DiagnosticSignHint" })
-
       vim.diagnostic.config({
         severity_sort = true,
         signs = {
@@ -80,11 +74,19 @@ return {
         },
       })
 
-      -- Load language servers setup options in langs directory
-      local lspconfig = require("lspconfig")
+      -- Load language servers setup options in langs directory.
+      -- A setup hook in langs/*.lua may return true to skip the default setup.
+      local servers = {}
       for ls, lsopt in pairs(opts.servers) do
-        lspconfig[ls].setup(lsopt)
+        local hook = opts.setup and opts.setup[ls]
+        if not (hook and hook(ls, lsopt)) then
+          vim.lsp.config(ls, lsopt)
+          vim.lsp.enable(ls)
+          table.insert(servers, ls)
+        end
       end
+      -- Install configured servers only; never auto-enable other installed ones (e.g. marksman)
+      require("mason-lspconfig").setup({ ensure_installed = servers, automatic_enable = false })
     end,
   },
 

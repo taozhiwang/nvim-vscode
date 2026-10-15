@@ -120,7 +120,7 @@ return {
 
   -- Indent guides animation
   {
-    "echasnovski/mini.indentscope",
+    "nvim-mini/mini.indentscope",
     event = "User LazyFile",
     init = function()
       -- Disable in special buffer

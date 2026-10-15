@@ -27,7 +27,7 @@ function M.start_watch(buf, fname)
     return
   end
   if #M.idle_watchers == 0 then
-    table.insert(M.idle_watchers, { watch = vim.loop.new_fs_event() })
+    table.insert(M.idle_watchers, { watch = vim.uv.new_fs_event() })
   end
   local watcher = M.idle_watchers[#M.idle_watchers]
   table.remove(M.idle_watchers, #M.idle_watchers)
